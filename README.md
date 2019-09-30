@@ -16,11 +16,12 @@ En el modelo debemos incluir: vagones de pasajeros, vagones de carga, y vagones 
 
 
 ### Vagones de pasajeros
-Para definir un vagón de pasajeros, debemos indicar el largo y el ancho medidos en metros, si tiene o no _baños_, y si está o no ordenado. 
+Para definir un vagón de pasajeros, debemos indicar el largo y el ancho medidos en metros, si tiene o no _baños_, y si está o no _ordenado_. 
 
 A partir de estos valores, la _cantidad de pasajeros_ que puede transportar un vagón se calcula de esta forma:
 - si el ancho es hasta 3 metros, entran 8 pasajeros por cada metro de largo.
 - si el ancho es de más de 3 metros, entran 10 pasajeros por cada metro de largo.
+
 Si el vagón no está ordenado, restar 15 pasajeros.
 
 P.ej.:
@@ -72,9 +73,62 @@ Además, se tiene que poder hacer _mantenimiento_ de una formación, que implica
 
 #### Un poco más salados
 Poder pedirle a una formación lo siguiente:
-- si está equilbrada en pasajeros, o sea: si considerando sólo los vagones que llevan pasajeros, la diferencia entre el que más lleva y el que menos no supera los 20 pasajeros.
-- si tiene los vagones ordenados, o sea: adelante los que llevan pasajeros (al menos uno), y atrás los que no. Para esto, los vagones se tienen que almacenar en una lista. Si agregamos dos vagones que llevan pasajeros, uno que no, y después uno que sí, entonces la formación no tiene los vagones ordenados.  
-¡Ojo! si todos los vagones de la formación llevan pasajeros, o si ninguno lleva, entonces la formación **sí** tiene los vagones ordenados.
+- si está _equilbrada en pasajeros_, o sea: si considerando sólo los vagones que llevan pasajeros, la diferencia entre el que más lleva y el que menos no supera los 20 pasajeros.
+- si está _organizada_, o sea: adelante los vagones que llevan pasajeros, y atrás los que no. Para esto, los vagones se tienen que almacenar en una lista. Si agregamos dos vagones que llevan pasajeros, uno que no, y después uno que sí, entonces la formación no está organizada.  
+¡Ojo! si todos los vagones de la formación llevan pasajeros, o si ninguno lleva, entonces la formación **sí** se considera organizada.
+
+## Tests etapa 1
+
+Vamos a verificar el comportamiento de dos formaciones, y de sus vagones.
+
+### Primera formación
+
+Está compuesta por cuatro vagones, en este orden:
+1. un vagón de pasajeros de 10 metros de largo por 4 de ancho, ordenado, con baño.
+1. un vagón de pasajeros de 7 metros de largo por 2 de ancho, no ordenado, sin baño.
+1. un vagón de carga de 6800 kg de carga máxima ideal, y con 5 maderas sueltas.
+1. un vagón dormitorio de 8 compartimientos y 3 camas por compartimiento.
+
+Esta tabla indica la respuesta de cada vagón a distintos pedidos  
+| Vagón | cant. pasajeros | peso máximo | carga máxima | tiene baño |  
+| --- | --- |  --- |  --- |  --- | 
+| 1 | 100 | 10300 | 300 | sí |
+| 2 | 41 | 6080 | 800 | no |
+| 3 | 0 | 6300 | 4800 | no |
+| 4 | 24 | 7120 | 1200 | sí |
+
+Indicamos los resultados esperados para el tren, antes y después de hacer mantenimiento.
+
+| | antes  | después |
+| --- | --- |  --- |
+| **pasajeros** | 165 | 180 |
+| **vagones populares** | 1 | 2 |
+| **es carguero** | no | no |
+| **dispersión de pesos** | 4220 | 3200 |
+| **baños** | 2 | 2 |
+
+Por qué las diferencias de valores después de hacer mantenimiento:  
+- _pasajeros_: el vagón 2 pasa a estar ordenado, lo que aumenta en 15 su cantidad de pasajeros.
+- _vagones populares_: por lo recién dicho, el vagón 2 pasa de 41 a 56 pasajeros, por lo que es considerado popular.
+- _dispersión de pesos_: el vagón 2 pasa de 6080 a 7280 kilos. Por su parte, el vagón 3 pasa de 6300 a 7100 kilos. Ahora el vagón más liviano es el 3.
+
+### Segunda formación
+
+Esta incluye: 
+1. un vagón de carga, con 8000 kg de carga máxima ideal, y una madera suelta.
+1. un vagón dormitorio, de 15 compartimientos con 4 camas cada uno.
+
+Indicamos los resultados esperados para el tren, antes y después de hacer mantenimiento.
+
+| | antes  | después |
+| --- | --- |  --- |
+| **pasajeros** | 60 | 60 |
+| **vagones populares** | 1 | 1 |
+| **es carguero** | sí | sí |
+| **dispersión de pesos** | 900 | 500 |
+| **baños** | 1 | 1 |
+
+Por qué cambia la dispersión de pesos: el vagón de carga aumenta su peso máximo de 9100 a 9500 kilos, al pasar de una madera suelta a ninguna. El peso máximo del vagón dormitorio es 10000, antes y después del mantenimiento.
 
 <br>
 
@@ -82,17 +136,30 @@ Poder pedirle a una formación lo siguiente:
 
 Agregar al modelo las **locomotoras**. De cada locomotora debe indicarse: su peso, hasta cuánto peso puede arrastar, y su velocidad máxima. Decimos que una locomotora es _eficiente_ si puede arrastrar, al menos, cinco veces su peso. P.ej. una locomotora que pesa 1000 kilos y puede arrastar hasta 7000 es eficiente; si puede arrastrar hasta 3000 entonces no es eficiente.
 
-Ahora una formación incluye locomotoras (pueden ser varias), además de vagones.
+Ahora una formación incluye locomotoras (pueden ser varias), además de vagones. 
 
 Con el modelo ampliado, tiene que poder obtenerse fácilmente, para una formación:
 - su _velocidad máxima_ , que es el mínimo entre las velocidades máximas de las locomotoras.
 - Si es _eficiente_; o sea, si todas sus locomotoras lo son.
 - Si _puede moverse_. 
   Una formación puede moverse si la suma del arrastre de cada una de sus locomotoras, es mayor o igual al _peso máximo_ de la formación, que es: peso de las locomotoras + peso máximo de los vagones.
-- Cuántos kilos de empuje le faltan a una formación para poder moverse, que es: 0 si ya se puede mover, y si no, el resultado de peso máximo - suma de arrastre de cada locomotora.
+- Cuántos _kilos de empuje le faltan_ para poder moverse, que es: 0 si ya se puede mover, y si no, el resultado de: peso máximo - suma de arrastre de cada locomotora.
 
 P.ej. si una formación tiene una locomotora que pesa 1000 kilos y arrastra hasta 30000, y cuatro vagones, de 6000 kilos de peso máximo cada uno, entonces sí puede moverse, porque su peso máximo es 25000.  
 Si agregamos dos vagones más de 6000 kilos, llevamos el peso máximo a 37000. Ahora la formación no puede moverse y le faltan 7000 kilos de empuje.
+
+
+## Tests etapa 2
+
+Consideremos la primera formación de los tests de la etapa 1, sin hacerle mantenimiento. Contando sólo los vagones, el peso máximo es 29800.
+
+Definamos dos locomotoras:
+1. Una locomotora de peso 3000 kg y arrastre 20000 kg.
+2. Una locomotora de peso 5000 kg y arrastre 22000 kg.
+
+Si a la formación le agregamos la locomotora 1, entonces, es eficiente, no puede moverse, y le faltan 12800 kg de empuje.  
+
+Si a la misma formación le agregamos _también_ la locomotora 2, entonces no es eficiente, sí puede moverse, y le faltan 0 kilos de empuje.
 
 
 ## Etapa 3 - depósitos
