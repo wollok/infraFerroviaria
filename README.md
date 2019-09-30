@@ -92,7 +92,8 @@ Está compuesta por cuatro vagones, en este orden:
 1. un vagón de carga de 6800 kg de carga máxima ideal, y con 5 maderas sueltas.
 1. un vagón dormitorio de 8 compartimientos y 3 camas por compartimiento.
 
-Esta tabla indica la respuesta de cada vagón a distintos pedidos  
+Esta tabla indica la respuesta de cada vagón a distintos pedidos 
+
 | Vagón | cant. pasajeros | peso máximo | carga máxima | tiene baño |  
 | --- | --- |  --- |  --- |  --- | 
 | 1 | 100 | 10300 | 300 | sí |
