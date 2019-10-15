@@ -1,0 +1,66 @@
+import vagones.*
+import formaciones.*
+
+describe "vagones y formaciones" {
+
+	const vagon1 = new VagonDePasajeros(largo=10, ancho=4, estaOrdenado=true, tieneBanios=true)
+	const vagon2 = new VagonDePasajeros(largo=7, ancho=2, estaOrdenado=false, tieneBanios=false)
+	const vagon3 = new VagonDeCarga(cargaMaximaIdeal=6800, maderasSueltas=5)
+	const vagon4 = new VagonDormitorio(compartimientos=8, camasPorCompartimiento=3)
+	const tren1 = new Formacion(vagones=[vagon1, vagon2, vagon3, vagon4])
+	const vagon11 = new VagonDeCarga(cargaMaximaIdeal=8000, maderasSueltas=1)
+	const vagon12 = new VagonDormitorio(compartimientos=15, camasPorCompartimiento=4)
+	const tren2 = new Formacion(vagones=[vagon11, vagon12])
+
+	test "vagones de pasajeros" {
+		assert.equals(100, vagon1.cantidadPasajeros())
+		assert.equals(10300, vagon1.pesoMaximo())
+		assert.equals(300, vagon1.cargaMaxima())
+		assert.that(vagon1.tieneBanios())
+		assert.equals(41, vagon2.cantidadPasajeros())
+		assert.equals(6080, vagon2.pesoMaximo())
+		assert.equals(800, vagon2.cargaMaxima())
+		assert.notThat(vagon2.tieneBanios())
+	}
+
+	test "vagones de carga" {
+		assert.equals(0, vagon3.cantidadPasajeros())
+		assert.equals(6300, vagon3.pesoMaximo())
+		assert.equals(4800, vagon3.cargaMaxima())
+		assert.notThat(vagon3.tieneBanios())
+		vagon3.hacerMantenimiento()
+		assert.equals(5600, vagon3.cargaMaxima())
+	}
+
+	test "vagones dormitorio" {
+		assert.equals(24, vagon4.cantidadPasajeros())
+		assert.equals(7120, vagon4.pesoMaximo())
+		assert.equals(1200, vagon4.cargaMaxima())
+		assert.that(vagon4.tieneBanios())
+	}
+	
+	test "tren 1" {
+		assert.equals(165, tren1.cantidadPasajeros())
+		assert.equals(1, tren1.cantidadVagonesPopulares())
+		assert.notThat(tren1.esFormacionCarguera())
+		assert.equals(4220, tren1.dispersionDePesos())
+		assert.equals(2, tren1.cantidadBanios())
+		tren1.hacerMantenimiento()
+		assert.equals(180, tren1.cantidadPasajeros())
+		assert.equals(2, tren1.cantidadVagonesPopulares())
+		assert.notThat(tren1.esFormacionCarguera())
+		assert.equals(3200, tren1.dispersionDePesos())
+		assert.equals(2, tren1.cantidadBanios())
+	}
+
+	test "tren 2" {
+		assert.equals(60, tren2.cantidadPasajeros())
+		assert.equals(1, tren2.cantidadVagonesPopulares())
+		assert.that(tren2.esFormacionCarguera())
+		assert.equals(900, tren2.dispersionDePesos())
+		assert.equals(1, tren2.cantidadBanios())
+		tren2.hacerMantenimiento()
+		assert.equals(500, tren2.dispersionDePesos())
+	}
+}
+

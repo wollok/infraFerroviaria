@@ -1,0 +1,31 @@
+import vagones.*
+import formaciones.*
+
+describe "formaciones con locomotoras" {
+
+	const vagon1 = new VagonDePasajeros(largo=10, ancho=4, estaOrdenado=true, tieneBanios=true)
+	const vagon2 = new VagonDePasajeros(largo=7, ancho=2, estaOrdenado=false, tieneBanios=false)
+	const vagon3 = new VagonDeCarga(cargaMaximaIdeal=6800, maderasSueltas=5)
+	const vagon4 = new VagonDormitorio(compartimientos=8, camasPorCompartimiento=3)
+	const tren1 = new Formacion(vagones=[vagon1, vagon2, vagon3, vagon4])
+	const loco1 = new Locomotora(peso=3000, arrastre=20000)
+	const loco2 = new Locomotora(peso=5000, arrastre=22000)
+
+	test "tren 1 sin locomotoras" {
+		assert.equals(29800, tren1.pesoMaximo())
+	}
+	
+	test "agrego locomotoras" {
+		tren1.agregarLocomotora(loco1)
+		assert.that(tren1.esEficiente())
+		assert.notThat(tren1.puedeMoverse())
+		assert.equals(12800, tren1.empujeFaltante())
+		tren1.agregarLocomotora(loco2)
+		assert.notThat(tren1.esEficiente())
+		assert.that(tren1.puedeMoverse())
+		assert.equals(0, tren1.empujeFaltante())
+	}
+
+	
+}
+
